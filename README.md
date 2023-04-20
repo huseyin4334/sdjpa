@@ -16,3 +16,6 @@
   - Not create a repository bean for this interface
 - RepositoryDefinition
   - Custom Repository Definition with this annotations
+
+# Hibernate Data Types
+- https://docs.jboss.org/hibernate/orm/5.0/mappingGuide/en-US/html/ch03.html
