@@ -5,8 +5,10 @@ import guru.springframework.sdjpa.repositories.BookRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
+@Profile({"local", "default"}) // run jost for this profiles
 @Slf4j
 @Component
 public class DataInitializer implements CommandLineRunner {
@@ -39,6 +41,7 @@ public class DataInitializer implements CommandLineRunner {
             We can see all data in here.
          */
 
+        bookRepository.deleteAll();
 
         Book book1 = new Book("Domain Driven Design", "123", "RandomHouse");
         Book savedBook = bookRepository.save(book1);

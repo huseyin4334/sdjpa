@@ -24,5 +24,15 @@
 - DDL is data definition language
 - In the context of SQL, data definition or data description language (DDL) is a syntax for creating and modifying database objects such as tables, indices, and users. DDL statements are similar to a computer programming language for defining data structures, especially database schemas. Common examples of DDL statements include CREATE, ALTER, and DROP.
 - hbm2ddl.auto
+- We can define a property according to our needs.
+- John suggested to validate or none for production.
 - https://en.wikipedia.org/wiki/Data_definition_language
+
+
+# Steps
+- docker-compose up
+- docker exec -it mysql -u root -p
+- execute codes in the mysqluser.sql script in terminal
+- start application
+- Look at the terminal for hibernate logs.
 
