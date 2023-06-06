@@ -34,7 +34,7 @@
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
-			<version>8.0.32</version>
+			<version>${mysql.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -52,6 +52,30 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+
+			<!-- Liquibase maven plugin -->
+			<plugin>
+				<groupId>org.liquibase</groupId>
+				<artifactId>liquibase-maven-plugin</artifactId>
+				<version>4.5.0</version>
+				<configuration>
+					<url>jdbc:mysql://127.0.0.1:3306/applicationdb?unicode=true&amp;characterEncoding=UTF-8&amp;serverTimezone=UTC</url>
+					<username>app-user</username>
+					<password>app-password</password>
+					<outputChangeLogFile>changelog.xml</outputChangeLogFile>
+					<changeSetAuthor>Huseyin</changeSetAuthor>
+					<changelogSchemaName>bookDb</changelogSchemaName>
+					<!--<propertyFileWillOverride>true</propertyFileWillOverride>
+					<propertyFile>target/classes/liquibase.properties</propertyFile>-->
+				</configuration>
+				<dependencies>
+					<dependency>
+						<groupId>mysql</groupId>
+						<artifactId>mysql-connector-java</artifactId>
+						<version>${mysql.version}</version>
+					</dependency>
+				</dependencies>
 			</plugin>
 		</plugins>
 	</build>

@@ -36,3 +36,7 @@
 - start application
 - Look at the terminal for hibernate logs.
 
+# Liquibase
+
+Liquibase is a migration tool.
+Migrations are the process of moving code from one system to another.
