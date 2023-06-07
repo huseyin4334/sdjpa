@@ -36,3 +36,42 @@
 - start application
 - Look at the terminal for hibernate logs.
 
+# PRIMARY KEYS
+
+## Numeric Primary Keys (Long)
+- @GeneratedValue
+  - GenerationType.AUTO - hibernate generation
+  - GenerationType.SEQUENCE - Use database sequence (Mysql doesn't support)
+  - GenerationType.IDENTITY - Use auto incremented database columns
+  - GenerationType.TABLE - Use database table to simulate sequence
+
+## UUID Primary Keys
+- UUID (you-id) - Universally Unique Identifier, a unique 128 bit value
+- IETF RFC 4122 is default generator in hibernate. That's an international standard.
+
+
+## Natural Primary Keys
+- A unique value with business meaning outside of the database
+- Like UPC or ISBN
+- Not considered best practice
+
+
+## Which one we use?
+- Small Table
+  - few millions rows
+  - Favor Number (Integer or Long)
+- Large Table
+  - 10 million or billions rows
+  - Favor is UUID (if disk space allows this)
+
+
+
+
+
+
+
+
+
+
+
+
