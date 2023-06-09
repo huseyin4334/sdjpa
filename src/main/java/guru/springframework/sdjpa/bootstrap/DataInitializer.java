@@ -45,14 +45,14 @@ public class DataInitializer implements CommandLineRunner {
 
         Book book1 = new Book("Domain Driven Design", "123", "RandomHouse", 1L);
         Book savedBook = bookRepository.save(book1);
-        log.info("{} saved with {} id", savedBook.getName(), savedBook.getId());
+        log.info("{} saved with {} id", savedBook.getTitle(), savedBook.getId());
 
         Book book2 = new Book("Spring In Action", "1234", "Oriely", 1L);
         Book savedBook2 = bookRepository.save(book2);
-        log.info("{} saved with {} id", savedBook2.getName(), savedBook2.getId());
+        log.info("{} saved with {} id", savedBook2.getTitle(), savedBook2.getId());
 
         bookRepository.findAll().forEach(book -> {
-            log.info("{} founded with {} id", savedBook2.getName(), savedBook2.getId());
+            log.info("{} founded with {} id", savedBook2.getTitle(), savedBook2.getId());
         });
     }
 }

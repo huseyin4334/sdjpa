@@ -6,8 +6,8 @@
     Therefore, Every table have own sequence table for performance.
 */
 
-drop table if exist book;
-drop table if exist book_seq
+drop table if exists book;
+drop table if exists hibernate_sequence;
 
 create table book(
     id bigint not null,
@@ -17,9 +17,9 @@ create table book(
     primary key (id)
 ) engine=InnoDB;
 
-create table book_seq (
+create table hibernate_sequence (
     next_val bigint
 ) engine=InnoDB;
 
-insert into book_seq values(1);
+insert into hibernate_sequence values(1);
 
