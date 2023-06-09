@@ -1,6 +1,8 @@
 package guru.springframework.sdjpa.bootstrap;
 
+import guru.springframework.sdjpa.model.AuthorUuid;
 import guru.springframework.sdjpa.model.Book;
+import guru.springframework.sdjpa.repositories.AuthorUuidRepository;
 import guru.springframework.sdjpa.repositories.BookRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,17 +10,18 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
+import java.util.UUID;
+
 @Profile({"local", "default"}) // run jost for this profiles
 @Slf4j
 @Component
 public class DataInitializer implements CommandLineRunner {
 
     @Autowired
-    private final BookRepository bookRepository;
+    private BookRepository bookRepository;
 
-    public DataInitializer(BookRepository bookRepository) {
-        this.bookRepository = bookRepository;
-    }
+    @Autowired
+    private AuthorUuidRepository authorUuidRepository;
 
     @Override
     public void run(String... args) throws Exception {
@@ -54,5 +57,14 @@ public class DataInitializer implements CommandLineRunner {
         bookRepository.findAll().forEach(book -> {
             log.info("{} founded with {} id", savedBook2.getTitle(), savedBook2.getId());
         });
+
+
+        AuthorUuid authorUuid = new AuthorUuid("Huseyin", "Ccccc");
+        AuthorUuid savedAuthor = authorUuidRepository.save(authorUuid);
+        log.info("{} saved with {} id", savedAuthor.getId(), savedAuthor.getFirstName());
+
+        authorUuid = new AuthorUuid("Can", "wwwwww");
+        savedAuthor = authorUuidRepository.save(authorUuid);
+        log.info("{} saved with {} id", savedAuthor.getId(), savedAuthor.getFirstName());
     }
 }
