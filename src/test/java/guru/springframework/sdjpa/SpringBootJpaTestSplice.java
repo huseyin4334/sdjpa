@@ -31,7 +31,7 @@ public class SpringBootJpaTestSplice {
         assertThat(countBefore).isEqualTo(2);
         // inserted data in DataInitializer.(with ComponentScan)
 
-        bookRepository.save(new Book("My book", "12345", "Hus"));
+        bookRepository.save(new Book("My book", "12345", "Hus", 1L));
 
         long countAfter = bookRepository.count();
         assertThat(countBefore).isLessThan(countAfter);
