@@ -5,7 +5,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.Objects;
 
@@ -32,10 +34,15 @@ public class Book {
     private String isbn;
     private String publisher;
 
-    public Book(String name, String isbn, String publisher) {
+    @Setter
+    @Getter
+    private Long authorId;
+
+    public Book(String name, String isbn, String publisher, Long authorId) {
         this.name = name;
         this.isbn = isbn;
         this.publisher = publisher;
+        this.authorId = authorId;
     }
 
     // COMPARE DIFFERENT OBJECTS WITH ID
