@@ -2,8 +2,10 @@ package guru.springframework.sdjpa.bootstrap;
 
 import guru.springframework.sdjpa.model.AuthorUuid;
 import guru.springframework.sdjpa.model.Book;
+import guru.springframework.sdjpa.model.BookUuid;
 import guru.springframework.sdjpa.repositories.AuthorUuidRepository;
 import guru.springframework.sdjpa.repositories.BookRepository;
+import guru.springframework.sdjpa.repositories.BookUuidRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -22,6 +24,9 @@ public class DataInitializer implements CommandLineRunner {
 
     @Autowired
     private AuthorUuidRepository authorUuidRepository;
+
+    @Autowired
+    private BookUuidRepository bookUuidRepository;
 
     @Override
     public void run(String... args) throws Exception {
@@ -66,5 +71,14 @@ public class DataInitializer implements CommandLineRunner {
         authorUuid = new AuthorUuid("Can", "wwwwww");
         savedAuthor = authorUuidRepository.save(authorUuid);
         log.info("{} saved with {} id", savedAuthor.getId(), savedAuthor.getFirstName());
+
+
+        BookUuid bookUuid = new BookUuid("Domain Driven Design", "123", "RandomHouse", 1L);
+        BookUuid savedBookUuid = bookUuidRepository.save(bookUuid);
+        log.info("{} saved with {} id", savedBookUuid.getTitle(), savedBookUuid.getId());
+
+        bookUuid = new BookUuid("Spring In Action", "1234", "Oriely", 1L);
+        savedBookUuid = bookUuidRepository.save(bookUuid);
+        log.info("{} saved with {} id", savedBookUuid.getTitle(), savedBookUuid.getId());
     }
 }
