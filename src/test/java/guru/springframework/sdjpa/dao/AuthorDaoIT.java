@@ -49,4 +49,38 @@ class AuthorDaoIT {
         assertNotNull(author);
     }
 
+    @Test
+    void saveAuthor() {
+        Author author = Author.builder()
+                .firstName("Michael")
+                .lastName("zipkin")
+                .build();
+
+        authorDao.save(author);
+
+        assertNotNull(author.getId());
+    }
+
+    @Test
+    void updateAuthorTest() {
+        String name = "TestUser";
+
+        Author author = authorDao.getById(1L);
+        author.setFirstName(name);
+
+        Author updatedEntity = authorDao.getById(1L);
+
+        assertEquals(updatedEntity.getFirstName(), name);
+    }
+
+    @Test
+    void deleteTest() {
+
+        Author author = authorDao.getById(1L);
+        assertNotNull(author);
+
+        authorDao.delete(author);
+        Author deletedEntity = authorDao.getById(1L);
+        assertNull(deletedEntity);
+    }
 }

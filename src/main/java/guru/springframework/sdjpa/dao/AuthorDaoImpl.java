@@ -112,4 +112,63 @@ public class AuthorDaoImpl implements AuthorDao {
         }
         return null;
     }
+
+    @Override
+    public Author save(Author entity) {
+        try (
+                Connection connection = ds.getConnection();
+                PreparedStatement ps = connection.prepareStatement("insert into author (first_name, last_name) values (?, ?)");
+        ) {
+            // save entity
+            ps.setString(1, entity.getFirstName());
+            ps.setString(2, entity.getLastName());
+            ps.execute();
+
+            // get inserted id
+            try (Statement state = connection.createStatement()){
+                try (ResultSet rs = state.executeQuery("select LAST_INSERT_ID()")) {
+                    if (rs.next())
+                        entity.setId(rs.getLong(1));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return entity;
+    }
+
+    @Override
+    public void update(Author entity) {
+        try (
+                Connection connection = ds.getConnection();
+                PreparedStatement ps = connection.prepareStatement("update author set first_name = ?, last_name = ? where author.id = ?");
+        ) {
+            // update entity
+            ps.setString(1, entity.getFirstName());
+            ps.setString(2, entity.getLastName());
+            ps.setLong(3, entity.getId());
+            ps.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void delete(Author entity) {
+        deleteById(entity.getId());
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        try (
+                Connection connection = ds.getConnection();
+                PreparedStatement ps = connection.prepareStatement("delete from author where author.id = ?");
+        ) {
+            // update entity
+            ps.setLong(1, id);
+            ps.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }
