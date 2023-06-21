@@ -7,6 +7,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.ActiveProfiles;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -76,11 +77,15 @@ class AuthorDaoIT {
     @Test
     void deleteTest() {
 
-        Author author = authorDao.getById(1L);
-        assertNotNull(author);
+        Author testUser = Author.builder()
+                .firstName("Test")
+                .lastName("test")
+                .build();
 
-        authorDao.delete(author);
-        Author deletedEntity = authorDao.getById(1L);
-        assertNull(deletedEntity);
+        authorDao.save(testUser);
+        assertNotNull(testUser.getId());
+
+        authorDao.delete(testUser);
+        assertThrows(EmptyResultDataAccessException.class, () -> {authorDao.getById(testUser.getId());});
     }
 }
