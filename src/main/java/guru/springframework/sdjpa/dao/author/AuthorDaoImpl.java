@@ -1,5 +1,6 @@
-package guru.springframework.sdjpa.dao;
+package guru.springframework.sdjpa.dao.author;
 
+import guru.springframework.sdjpa.dao.book.BookDao;
 import guru.springframework.sdjpa.model.Author;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -11,6 +12,9 @@ import org.springframework.stereotype.Component;
 public class AuthorDaoImpl implements AuthorDao {
 
     private final JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    private BookDao bookDao;
 
     public AuthorDaoImpl(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -66,6 +70,6 @@ public class AuthorDaoImpl implements AuthorDao {
 
     @Override
     public RowMapper<Author> getRowMapper() {
-        return new AuthorMapper();
+        return new AuthorMapper(bookDao);
     }
 }

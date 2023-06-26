@@ -2,9 +2,11 @@ package guru.springframework.sdjpa.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@Builder
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
@@ -19,7 +21,7 @@ public class Book {
     private String publisher;
     private String title;
 
-    @ManyToOne(targetEntity = Author.class)
+    @Transient
     private Author author;
 
 }

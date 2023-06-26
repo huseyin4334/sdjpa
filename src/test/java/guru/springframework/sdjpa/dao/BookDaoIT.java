@@ -1,11 +1,10 @@
 package guru.springframework.sdjpa.dao;
 
 import guru.springframework.sdjpa.dao.author.AuthorDao;
-import guru.springframework.sdjpa.dao.author.AuthorDaoImpl;
-import guru.springframework.sdjpa.model.Author;
+import guru.springframework.sdjpa.dao.book.BookDao;
+import guru.springframework.sdjpa.model.Book;
 import jakarta.inject.Inject;
 import org.junit.jupiter.api.Test;
-import org.mockito.internal.matchers.GreaterThan;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
@@ -17,15 +16,18 @@ import static org.junit.jupiter.api.Assertions.*;
 @ActiveProfiles("default")
 @DataJpaTest
 //@ComponentScan(basePackages = {"guru.springframework.sdjpa.dao"})
-@Import(value = {AuthorDaoImpl.class})
+@Import(value = {BookDao.class})
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-class AuthorDaoIT {
+class BookDaoIT {
 
     /*
         Component Scan giving error in spring boot starter parent 3.0.0-M3
         If we run test from file. It's ok. But if i run test with maven, injection will be failed.
         We can use second option. Import annotation.
      */
+
+    @Inject
+    private BookDao bookDao;
 
     @Inject
     private AuthorDao authorDao;
@@ -37,9 +39,8 @@ class AuthorDaoIT {
         // when
 
         //then
-        Author author = authorDao.getById(1L);
-        assertNotNull(author);
-        assertTrue(author.getBooks().size() > 0);
+        Book book = bookDao.getById(1L);
+        assertNotNull(book);
     }
 
     @Test
@@ -49,46 +50,50 @@ class AuthorDaoIT {
         // when
 
         //then
-        Author author = authorDao.findAuthorByName("Craig Walls");
-        assertNotNull(author);
+        Book book = bookDao.findByIsbn("978-24934534");
+        assertNotNull(book);
     }
 
     @Test
     void saveAuthor() {
-        Author author = Author.builder()
-                .firstName("Michael")
-                .lastName("zipkin")
+        Book book = Book.builder()
+                .title("TestBook")
+                .publisher("TestBook Publisher")
+                .isbn("test-isbn")
+                .author(authorDao.getById(1L))
                 .build();
 
-        authorDao.save(author);
+        bookDao.save(book);
 
-        assertNotNull(author.getId());
+        assertNotNull(book.getId());
     }
 
     @Test
     void updateAuthorTest() {
         String name = "TestUser";
 
-        Author author = authorDao.getById(1L);
-        author.setFirstName(name);
+        Book book = bookDao.getById(1L);
+        book.setPublisher(name);
 
-        Author updatedEntity = authorDao.getById(1L);
+        Book updatedEntity = bookDao.getById(1L);
 
-        assertEquals(updatedEntity.getFirstName(), name);
+        assertEquals(updatedEntity.getPublisher(), name);
     }
 
     @Test
     void deleteTest() {
 
-        Author testUser = Author.builder()
-                .firstName("Test")
-                .lastName("test")
+        Book book = Book.builder()
+                .title("TestBook-delete")
+                .publisher("TestBook Publisher")
+                .isbn("test-isbn-delete")
+                .author(authorDao.getById(1L))
                 .build();
 
-        authorDao.save(testUser);
-        assertNotNull(testUser.getId());
+        bookDao.save(book);
+        assertNotNull(book.getId());
 
-        authorDao.delete(testUser);
-        assertThrows(EmptyResultDataAccessException.class, () -> {authorDao.getById(testUser.getId());});
+        bookDao.delete(book);
+        assertThrows(EmptyResultDataAccessException.class, () -> {bookDao.getById(book.getId());});
     }
 }
