@@ -9,6 +9,4 @@ public interface BookDao extends BaseDao<Book, Long> {
 
     Book findByIsbn(String isbn);
 
-    List<Book> booksByAuthorId(Long id);
-
 }

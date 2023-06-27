@@ -1,6 +1,7 @@
 package guru.springframework.sdjpa.dao;
 
 
+import jakarta.persistence.EntityManager;
 import org.springframework.jdbc.core.RowMapper;
 
 public interface BaseDao<V, K> {
@@ -15,6 +16,5 @@ public interface BaseDao<V, K> {
 
     void deleteById(K id);
 
-    // That for thread safety
-    RowMapper<V> getRowMapper();
+    EntityManager entityManager();
 }

@@ -1,10 +1,11 @@
 package guru.springframework.sdjpa.dao.book;
 
-import guru.springframework.sdjpa.dao.author.AuthorDao;
+import guru.springframework.sdjpa.model.Author;
 import guru.springframework.sdjpa.model.Book;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.TypedQuery;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -13,52 +14,55 @@ import java.util.List;
 @Component
 public class BookDaoImpl implements BookDao {
 
-    private final JdbcTemplate jdbcTemplate;
+    private EntityManagerFactory emf;
 
-    @Autowired
-    private AuthorDao authorDao;
 
-    public BookDaoImpl(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+    public BookDaoImpl(EntityManagerFactory emf) {
+        this.emf = emf;
     }
 
     @Override
     public Book getById(Long id) {
-        return jdbcTemplate.queryForObject("select * from book where id = ?", getRowMapper(), id);
+        EntityManager em = entityManager();
+        Book book = em.find(Book.class, id);
+        em.close();
+        return book;
     }
 
     @Override
     public Book findByIsbn(String isbn) {
-        return jdbcTemplate.queryForObject("select * from book where trim(first_name) = ?", getRowMapper(), isbn);
+        EntityManager em = entityManager();
+        TypedQuery<Book> q =  em.createQuery("select a from Book a where a.isbn = :name", Book.class);
+        q.setParameter("name", isbn);
+        Book book = q.getSingleResult();
+        em.close();
+        return book;
     }
 
     @Override
     public Book save(Book entity) {
-        jdbcTemplate.update(
-                "insert into book (publisher, isbn, title, author_id) values (?, ?, ?, ?)",
-                entity.getPublisher(),
-                entity.getIsbn(),
-                entity.getTitle(),
-                entity.getAuthor().getId()
-        );
+        EntityManager em = entityManager();
 
-        Long insertedId = jdbcTemplate.queryForObject("select LAST_INSERT_ID()", Long.class); // that's specific for mysql
+        // em.joinTransaction(); // check opened transaction and give me open transaction. -> but this can be thrown. Because transaction can be already in process
 
-        entity.setId(insertedId);
+        em.getTransaction().begin(); // start transaction
+        em.persist(entity);
+        em.flush();
+        em.getTransaction().commit(); // commit changes to db and close connection
 
+        em.close();
         return entity;
     }
 
     @Override
     public void update(Book entity) {
-        jdbcTemplate.update(
-                "update book set publisher = ? , isbn = ?, title = ?, author_id = ? where id = ?",
-                entity.getPublisher(),
-                entity.getIsbn(),
-                entity.getTitle(),
-                entity.getAuthor().getId(),
-                entity.getId()
-        );
+        EntityManager em = entityManager();
+
+        em.getTransaction().begin(); // start transaction
+        em.merge(entity); // merge not working alone. We have to use it with flush.
+        em.flush(); // save changes in db
+        em.getTransaction().commit(); // close connection
+        em.close();
     }
 
     @Override
@@ -68,19 +72,22 @@ public class BookDaoImpl implements BookDao {
 
     @Override
     public void deleteById(Long id) {
-        jdbcTemplate.update(
-                "delete from book where id = ?",
-                id
-        );
+        EntityManager em = entityManager();
+
+        em.getTransaction().begin();
+
+        em.createQuery("delete from Book a where a.id = :aId")
+                .setParameter("aId", id)
+                .executeUpdate();
+        em.flush();
+
+        em.getTransaction().commit();
+
+        em.close();
     }
 
-    @Override
-    public List<Book> booksByAuthorId(Long id) {
-        return jdbcTemplate.query("select * from book where author_id = ?", getRowMapper(), id);
-    }
 
-    @Override
-    public RowMapper<Book> getRowMapper() {
-        return new BookMapper(authorDao);
+    public EntityManager entityManager() {
+        return emf.createEntityManager();
     }
 }

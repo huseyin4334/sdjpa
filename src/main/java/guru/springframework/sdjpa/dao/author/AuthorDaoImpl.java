@@ -1,58 +1,63 @@
 package guru.springframework.sdjpa.dao.author;
 
-import guru.springframework.sdjpa.dao.book.BookDao;
 import guru.springframework.sdjpa.model.Author;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.TypedQuery;
 import org.springframework.stereotype.Component;
 
 
 @Component
 public class AuthorDaoImpl implements AuthorDao {
 
-    private final JdbcTemplate jdbcTemplate;
+    private final EntityManagerFactory emf;
 
-    @Autowired
-    private BookDao bookDao;
-
-    public AuthorDaoImpl(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+    public AuthorDaoImpl(EntityManagerFactory emf) {
+        this.emf = emf;
     }
 
     @Override
     public Author getById(Long id) {
-        return jdbcTemplate.queryForObject("select * from auther where id = ?", getRowMapper(), id);
+        EntityManager em = entityManager();
+        Author author = em.find(Author.class, id);
+        em.close();
+        return author;
     }
 
     @Override
     public Author findAuthorByName(String name) {
-        return jdbcTemplate.queryForObject("select * from author where CONCAT(trim(first_name) + ' ' + trim(last_name)) = ?", getRowMapper(), name);
+        EntityManager em = entityManager();
+        TypedQuery<Author> q =  em.createQuery("select a from Author a where concat(a.firstName, ' ', a.lastName) = :name", Author.class);
+        q.setParameter("name", name);
+        Author author = q.getSingleResult();
+        em.close();
+        return author;
     }
 
     @Override
     public Author save(Author entity) {
-        jdbcTemplate.update(
-                "insert into author (first_name, last_name) values (?, ?)",
-                entity.getFirstName(),
-                entity.getLastName()
-        );
+        EntityManager em = entityManager();
 
-        Long insertedId = jdbcTemplate.queryForObject("select LAST_INSERT_ID()", Long.class); // that's specific for mysql
+        // em.joinTransaction(); // check opened transaction and give me open transaction. -> but this can be thrown. Because transaction can be already in process
 
-        entity.setId(insertedId);
+        em.getTransaction().begin(); // start transaction
+        em.persist(entity);
+        em.flush();
+        em.getTransaction().commit(); // commit changes to db and close connection
 
+        em.close();
         return entity;
     }
 
     @Override
     public void update(Author entity) {
-        jdbcTemplate.update(
-                "update author set first_name = ? , last_name = ? where id = ?",
-                entity.getFirstName(),
-                entity.getLastName(),
-                entity.getId()
-        );
+        EntityManager em = entityManager();
+
+        em.getTransaction().begin(); // start transaction
+        em.merge(entity); // merge not working alone. We have to use it with flush.
+        em.flush(); // save changes in db
+        em.getTransaction().commit(); // close connection
+        em.close();
     }
 
     @Override
@@ -62,14 +67,21 @@ public class AuthorDaoImpl implements AuthorDao {
 
     @Override
     public void deleteById(Long id) {
-        jdbcTemplate.update(
-                "delete from author where id = ?",
-                id
-        );
+        EntityManager em = entityManager();
+
+        em.getTransaction().begin();
+
+        em.createQuery("delete from Author a where a.id = :aId")
+                .setParameter("aId", id)
+                .executeUpdate();
+        em.flush();
+
+        em.getTransaction().commit();
+
+        em.close();
     }
 
-    @Override
-    public RowMapper<Author> getRowMapper() {
-        return new AuthorMapper(bookDao);
+    public EntityManager entityManager() {
+        return emf.createEntityManager();
     }
 }
