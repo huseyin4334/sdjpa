@@ -13,4 +13,6 @@ public interface AuthorDao extends BaseDao<Author, Long> {
 
     Author getAuthorByName(String name);
 
+    Author getAuthorByNameWithCriteria(String name);
+
 }
