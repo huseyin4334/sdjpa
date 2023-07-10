@@ -3,8 +3,11 @@ package guru.springframework.sdjpa.dao.author;
 import guru.springframework.sdjpa.model.Author;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 
 @Component
@@ -32,6 +35,17 @@ public class AuthorDaoImpl implements AuthorDao {
         Author author = q.getSingleResult();
         em.close();
         return author;
+    }
+
+    @Override
+    public List<Author> findAll() {
+        EntityManager em = entityManager();
+        try {
+            TypedQuery<Author> q = em.createNamedQuery("author_find_all", Author.class);
+            return q.getResultList();
+        } finally {
+            em.close();
+        }
     }
 
     @Override
@@ -68,17 +82,22 @@ public class AuthorDaoImpl implements AuthorDao {
     @Override
     public void deleteById(Long id) {
         EntityManager em = entityManager();
+        Query query = em.createQuery("delete from Author where id = :id");
 
-        em.getTransaction().begin();
-
-        em.createQuery("delete from Author a where a.id = :aId")
-                .setParameter("aId", id)
-                .executeUpdate();
-        em.flush();
-
-        em.getTransaction().commit();
+        query.setParameter("id", id);
+        query.executeUpdate();
 
         em.close();
+    }
+
+    @Override
+    public Author getAuthorByName(String name) {
+        EntityManager em = entityManager();
+        TypedQuery<Author> q =  em.createNamedQuery("author_getByName", Author.class);
+        q.setParameter("name", name);
+        Author author = q.getSingleResult();
+        em.close();
+        return author;
     }
 
     public EntityManager entityManager() {

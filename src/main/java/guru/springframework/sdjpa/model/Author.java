@@ -8,6 +8,10 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
+@NamedQuery(name = "author_find_all", query = "from Author")
+@NamedQueries({
+        @NamedQuery(name = "author_getByName", query = "from Author where concat(a.firstName, ' ', a.lastName) = :name")
+})
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
