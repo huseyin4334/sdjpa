@@ -2,70 +2,74 @@ package guru.springframework.sdjpa.dao.author;
 
 import guru.springframework.sdjpa.dao.book.BookDao;
 import guru.springframework.sdjpa.model.Author;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.TypedQuery;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 
 @Component
-public class AuthorDaoImpl implements AuthorDao {
+public abstract class AuthorDaoImpl implements AuthorDao {
 
     private final JdbcTemplate jdbcTemplate;
+
+    private final EntityManagerFactory emf;
 
     @Autowired
     private BookDao bookDao;
 
-    public AuthorDaoImpl(JdbcTemplate jdbcTemplate) {
+    public AuthorDaoImpl(JdbcTemplate jdbcTemplate, EntityManagerFactory emf) {
+        this.emf = emf;
         this.jdbcTemplate = jdbcTemplate;
     }
 
     @Override
-    public Author getById(Long id) {
-        return jdbcTemplate.queryForObject("select * from auther where id = ?", getRowMapper(), id);
+    public List<Author> findAllWithJdbcTemplate(PageRequest request) {
+        return jdbcTemplate.query("select * from author limit ? offset ?",
+                getRowMapper(), request.getPageSize(), request.getOffset());
     }
 
     @Override
-    public Author findAuthorByName(String name) {
-        return jdbcTemplate.queryForObject("select * from author where CONCAT(trim(first_name) + ' ' + trim(last_name)) = ?", getRowMapper(), name);
+    public List<Author> findAllWithJdbcTemplateSortable(PageRequest request) {
+        return jdbcTemplate.query("select * from author order by first_name " + request.getSort().getOrderFor("first_name").getDirection().name() + " limit ? offset ?",
+                getRowMapper(), request.getPageSize(), request.getOffset());
     }
 
     @Override
-    public Author save(Author entity) {
-        jdbcTemplate.update(
-                "insert into author (first_name, last_name) values (?, ?)",
-                entity.getFirstName(),
-                entity.getLastName()
-        );
-
-        Long insertedId = jdbcTemplate.queryForObject("select LAST_INSERT_ID()", Long.class); // that's specific for mysql
-
-        entity.setId(insertedId);
-
-        return entity;
+    public List<Author> findAllWithHibernate(PageRequest request) {
+        EntityManager em = entityManager();
+        List<Author> list = em.createQuery("select a from Author a", Author.class)
+                .setMaxResults(request.getPageSize())
+                .setFirstResult((int) request.getOffset())
+                .getResultList();
+        closeEntityManager(em);
+        return list;
     }
 
     @Override
-    public void update(Author entity) {
-        jdbcTemplate.update(
-                "update author set first_name = ? , last_name = ? where id = ?",
-                entity.getFirstName(),
-                entity.getLastName(),
-                entity.getId()
-        );
+    public List<Author> findAllWithHibernateSortable(PageRequest request) {
+
+        EntityManager em = entityManager();
+        List<Author> list = em.createQuery("select a from Author a order by a.firstName " + request.getSort().getOrderFor("firstName").getDirection().name(), Author.class)
+                .setMaxResults(request.getPageSize())
+                .setFirstResult(Math.toIntExact(request.getOffset()))
+                .getResultList();
+        closeEntityManager(em);
+        return list;
     }
 
-    @Override
-    public void delete(Author entity) {
-        deleteById(entity.getId());
+    public EntityManager entityManager() {
+        return emf.createEntityManager();
     }
 
-    @Override
-    public void deleteById(Long id) {
-        jdbcTemplate.update(
-                "delete from author where id = ?",
-                id
-        );
+    public void closeEntityManager(EntityManager em) {
+        em.close();
     }
 
     @Override

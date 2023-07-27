@@ -10,7 +10,13 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ActiveProfiles;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -31,64 +37,117 @@ class AuthorDaoIT {
     private AuthorDao authorDao;
 
     @Test
-    void getById() {
+    void findAllJpaSort() {
         // given
 
         // when
 
         //then
-        Author author = authorDao.getById(1L);
-        assertNotNull(author);
-        assertTrue(author.getBooks().size() > 0);
+        Page<Author> authors = authorDao.findAll(PageRequest.of(0, 5, Sort.by(Sort.Order.desc("firstName"))));
+        assertNotNull(authors);
+        assertTrue(authors.getSize() > 0);
+        assertEquals(10, authors.getSize());
     }
-
     @Test
-    void findByName() {
+    void findAllJpa() {
         // given
 
         // when
 
         //then
-        Author author = authorDao.findAuthorByName("Craig Walls");
-        assertNotNull(author);
+        Page<Author> authors = authorDao.findAll(PageRequest.of(0, 5));
+        assertNotNull(authors);
+        assertTrue(authors.getSize() > 0);
+        assertEquals(10, authors.getSize());
     }
 
     @Test
-    void saveAuthor() {
-        Author author = Author.builder()
-                .firstName("Michael")
-                .lastName("zipkin")
-                .build();
+    void findAllJpaEmpty() {
+        // given
 
-        authorDao.save(author);
+        // when
 
-        assertNotNull(author.getId());
+        //then
+        Page<Author> authors = authorDao.findAll(PageRequest.of(100, 5));
+        assertNotNull(authors);
+        assertTrue(authors.getSize() > 0);
+        assertEquals(0, authors.getSize());
     }
 
     @Test
-    void updateAuthorTest() {
-        String name = "TestUser";
+    void findAllJdbcTemplateSort() {
+        // given
 
-        Author author = authorDao.getById(1L);
-        author.setFirstName(name);
+        // when
 
-        Author updatedEntity = authorDao.getById(1L);
-
-        assertEquals(updatedEntity.getFirstName(), name);
+        //then
+        List<Author> authors = authorDao.findAllWithJdbcTemplateSortable(PageRequest.of(0, 5, Sort.by(Sort.Order.desc("first_name"))));
+        assertNotNull(authors);
+        assertTrue(authors.size()>0);
+        assertEquals(5, authors.size());
     }
 
     @Test
-    void deleteTest() {
+    void findAllJdbcTemplate() {
+        // given
 
-        Author testUser = Author.builder()
-                .firstName("Test")
-                .lastName("test")
-                .build();
+        // when
 
-        authorDao.save(testUser);
-        assertNotNull(testUser.getId());
-
-        authorDao.delete(testUser);
-        assertThrows(EmptyResultDataAccessException.class, () -> {authorDao.getById(testUser.getId());});
+        //then
+        List<Author> authors = authorDao.findAllWithJdbcTemplate(PageRequest.of(0, 5));
+        assertNotNull(authors);
+        assertTrue(authors.size()>0);
+        assertEquals(5, authors.size());
     }
+
+    @Test
+    void findAllJdbcTemplateEmpty() {
+        // given
+
+        // when
+
+        //then
+        List<Author> authors = authorDao.findAllWithJdbcTemplate(PageRequest.of(100, 5));
+        assertNotNull(authors);
+        assertEquals(0, authors.size());
+    }
+
+    @Test
+    void findAllHibernateSort() {
+        // given
+
+        // when
+
+        //then
+        List<Author> authors = authorDao.findAllWithHibernateSortable(PageRequest.of(0, 5, Sort.by(Sort.Order.desc("firstName"))));
+        assertNotNull(authors);
+        assertTrue(authors.size()>0);
+        assertEquals(5, authors.size());
+    }
+
+    @Test
+    void findAllHibernate() {
+        // given
+
+        // when
+
+        //then
+        List<Author> authors = authorDao.findAllWithHibernate(PageRequest.of(0, 5));
+        assertNotNull(authors);
+        assertTrue(authors.size()>0);
+        assertEquals(5, authors.size());
+    }
+
+    @Test
+    void findAllHibernateEmpty() {
+        // given
+
+        // when
+
+        //then
+        List<Author> authors = authorDao.findAllWithHibernate(PageRequest.of(100, 5));
+        assertNotNull(authors);
+        assertEquals(0, authors.size());
+    }
+
 }
