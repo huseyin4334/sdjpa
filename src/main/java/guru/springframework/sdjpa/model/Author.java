@@ -10,7 +10,8 @@ import java.util.List;
 
 @NamedQuery(name = "author_find_all", query = "from Author")
 @NamedQueries({
-        @NamedQuery(name = "author_getByName", query = "from Author where concat(a.firstName, ' ', a.lastName) = :name")
+        @NamedQuery(name = "author_getByName", query = "from Author a where concat(a.firstName, ' ', a.lastName) = :name"),
+        @NamedQuery(name = "Author.findByNameWithNameQuery", query = "from Author a where concat(a.firstName, ' ', a.lastName) = :name")
 })
 @Entity
 @AllArgsConstructor

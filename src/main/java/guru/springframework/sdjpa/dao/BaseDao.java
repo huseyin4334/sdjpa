@@ -15,6 +15,4 @@ public interface BaseDao<V, K> {
     void delete(V entity);
 
     void deleteById(K id);
-
-    EntityManager entityManager();
 }

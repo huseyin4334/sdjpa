@@ -11,8 +11,4 @@ public interface AuthorDao extends BaseDao<Author, Long> {
 
     List<Author> findAll();
 
-    Author getAuthorByName(String name);
-
-    Author getAuthorByNameWithCriteria(String name);
-
 }

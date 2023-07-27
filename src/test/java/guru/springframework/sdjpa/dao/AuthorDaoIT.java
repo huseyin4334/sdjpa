@@ -4,12 +4,14 @@ import guru.springframework.sdjpa.dao.author.AuthorDao;
 import guru.springframework.sdjpa.dao.author.AuthorDaoImpl;
 import guru.springframework.sdjpa.model.Author;
 import jakarta.inject.Inject;
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.mockito.internal.matchers.GreaterThan;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.orm.jpa.JpaObjectRetrievalFailureException;
 import org.springframework.test.context.ActiveProfiles;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -54,6 +56,18 @@ class AuthorDaoIT {
     }
 
     @Test
+    void findByNameNotFoundTest() {
+        // given
+
+        // when
+
+        //then
+        assertThrows(EntityNotFoundException.class, () -> {
+            Author a = authorDao.findAuthorByName("Craig Walls");
+        });
+    }
+
+    @Test
     void saveAuthor() {
         Author author = Author.builder()
                 .firstName("Michael")
@@ -89,6 +103,7 @@ class AuthorDaoIT {
         assertNotNull(testUser.getId());
 
         authorDao.delete(testUser);
-        assertThrows(EmptyResultDataAccessException.class, () -> {authorDao.getById(testUser.getId());});
+        // assertThrows(JpaObjectRetrievalFailureException.class, () -> {authorDao.getById(testUser.getId());});
+        assertNull(authorDao.getById(testUser.getId()));
     }
 }
