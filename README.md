@@ -32,7 +32,7 @@
 # Steps
 - docker-compose up
 - docker exec -it mysql -u root -p
-- execute codes in the mysqluser.sql script in terminal
+- execute codes in the mysql-setup.sql script in terminal
 - start application
 - Look at the terminal for hibernate logs.
 
