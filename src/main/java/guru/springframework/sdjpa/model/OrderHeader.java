@@ -9,6 +9,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.sql.Timestamp;
 import java.util.Objects;
+import java.util.Set;
 
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor // We have to define no args constructor
@@ -67,4 +68,7 @@ public class OrderHeader extends BaseEntity {
 
     @UpdateTimestamp // hibernate feature
     private Timestamp lastModifiedDate;
+
+    @OneToMany(mappedBy = "orderHeader", cascade = {CascadeType.PERSIST}) // this relation is bidirectional
+    private Set<OrderLine> orderLines;
 }
