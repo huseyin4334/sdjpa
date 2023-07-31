@@ -51,8 +51,6 @@ import java.util.Set;
 })
 public class OrderHeader extends BaseEntity {
 
-    private String customer;
-
     @Embedded
     private Address shippingAddress;
 
@@ -62,13 +60,20 @@ public class OrderHeader extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus;
 
-    @CreationTimestamp // hibernate feature
-    @Column(updatable = false)
-    private Timestamp createdDate;
+    @Embedded
+    private Audit audit;
 
-    @UpdateTimestamp // hibernate feature
-    private Timestamp lastModifiedDate;
-
-    @OneToMany(mappedBy = "orderHeader", cascade = {CascadeType.PERSIST}) // this relation is bidirectional
+    @OneToMany(mappedBy = "orderHeader", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true) // this relation is bidirectional
     private Set<OrderLine> orderLines;
+
+    @ManyToOne
+    private Customer customer;
+
+    public Timestamp getCreatedDate() {
+        return audit.getCreatedDate();
+    }
+
+    public Timestamp getLastModifiedDate() {
+        return audit.getLastModifiedDate();
+    }
 }

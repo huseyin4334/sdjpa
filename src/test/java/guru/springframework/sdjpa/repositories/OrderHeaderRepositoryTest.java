@@ -1,9 +1,11 @@
 package guru.springframework.sdjpa.repositories;
 
+import guru.springframework.sdjpa.model.Customer;
 import guru.springframework.sdjpa.model.OrderHeader;
 import guru.springframework.sdjpa.model.OrderLine;
 import guru.springframework.sdjpa.model.Product;
 import jakarta.inject.Inject;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -27,11 +29,23 @@ class OrderHeaderRepositoryTest {
     @Inject
     ProductRepository productRepository;
 
+    @Inject
+    CustomerRepository customerRepository;
+
     @Test
     void saveTest() {
         OrderHeader orderHeader = new OrderHeader();
 
-        orderHeader.setCustomer("Huseyin");
+        Customer customer = customerRepository.findOne(
+                Example.of(
+                        Customer.builder().customerName("David").build(),
+                        ExampleMatcher.matching()
+                )
+        ).orElse(null);
+
+        orderHeader.setCustomer(customer);
+
+        assertNotNull(customer);
 
         orderHeaderRepository.save(orderHeader);
 
@@ -44,7 +58,14 @@ class OrderHeaderRepositoryTest {
     void testWithOrderLine() {
         OrderHeader orderHeader = new OrderHeader();
 
-        orderHeader.setCustomer("Huseyin-OrderLine");
+        Customer customer = customerRepository.findOne(
+                Example.of(
+                        Customer.builder().customerName("David").build(),
+                        ExampleMatcher.matching()
+                )
+        ).orElse(null);
+
+        orderHeader.setCustomer(customer);
 
         orderHeader.setOrderLines(
                 Set.of(
@@ -67,7 +88,14 @@ class OrderHeaderRepositoryTest {
     void testWithOrderLineAndProduct() {
         OrderHeader orderHeader = new OrderHeader();
 
-        orderHeader.setCustomer("Huseyin-OrderLine");
+        Customer customer = customerRepository.findOne(
+                Example.of(
+                        Customer.builder().customerName("David").build(),
+                        ExampleMatcher.matching()
+                )
+        ).orElse(null);
+
+        orderHeader.setCustomer(customer);
 
         productRepository.saveAndFlush(
                 Product.builder()
