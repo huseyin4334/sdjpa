@@ -12,6 +12,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Set;
@@ -84,6 +85,7 @@ class OrderHeaderRepositoryTest {
     }
 
 
+    @Rollback(value = false) // not rollback saved data
     @Test
     void testWithOrderLineAndProduct() {
         OrderHeader orderHeader = new OrderHeader();
