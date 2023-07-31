@@ -5,6 +5,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.sql.Timestamp;
@@ -63,10 +65,12 @@ public class OrderHeader extends BaseEntity {
     @Embedded
     private Audit audit;
 
-    @OneToMany(mappedBy = "orderHeader", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true) // this relation is bidirectional
+    @OneToMany(mappedBy = "orderHeader", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true, fetch = FetchType.EAGER) // this relation is bidirectional
+    @Fetch(FetchMode.SUBSELECT) // we are saying create subquery for fetch this child entity with this annotation.
     private Set<OrderLine> orderLines;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @Fetch(FetchMode.SELECT)
     private Customer customer;
 
     public Timestamp getCreatedDate() {
