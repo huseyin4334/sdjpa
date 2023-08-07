@@ -51,6 +51,8 @@ import java.util.Set;
                 column = @Column(name = "bill_to_zip_code")
         )
 })
+
+@Table(name = "order_header")
 public class OrderHeader extends BaseEntity {
 
     @Embedded
@@ -63,7 +65,11 @@ public class OrderHeader extends BaseEntity {
     private OrderStatus orderStatus;
 
     @Embedded
+    @Column(name = "audit")
     private Audit audit;
+
+    @Lob // that's using for large data. clob, blob. For more, https://www.baeldung.com/hibernate-lob
+    private String metaValue; // meta_value long_text COLLATE -> mysql
 
     @OneToMany(mappedBy = "orderHeader", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true, fetch = FetchType.EAGER) // this relation is bidirectional
     @Fetch(FetchMode.SUBSELECT) // we are saying create subquery for fetch this child entity with this annotation.

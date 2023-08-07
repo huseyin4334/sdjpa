@@ -1,9 +1,6 @@
 package guru.springframework.sdjpa.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.Set;
@@ -14,6 +11,16 @@ import java.util.Set;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "product", indexes = {
+        @Index(name = "name_search", columnList = "name"),
+        @Index(name = "quantityOnHand_search", columnList = "quantity_on_hand")
+})
+
+/*
+    For more:
+        https://www.baeldung.com/jpa-indexes
+        https://dzone.com/refcardz/getting-started-with-hibernate
+ */
 public class Product extends BaseEntity {
 
     private String name;

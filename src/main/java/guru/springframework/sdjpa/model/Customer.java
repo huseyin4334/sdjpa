@@ -19,6 +19,7 @@ import java.util.Set;
 @AllArgsConstructor
 public class Customer extends BaseEntity {
 
+    @Basic(optional = false)
     @Length(max = 50, message = "CustomerName can not be taller than 50 character")
     private String customerName;
 
