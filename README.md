@@ -47,3 +47,7 @@
 - SERIALIZABLE
   - A lock is placed on the affected rows of the DataSet until EOT. All access structures that are modified, and those used by the query, are locked until EOT.
   - So, other transactions can't any insert, read or update in this table.
+
+# Transactional Proxy Mode
+- We can just lazy initialize in external method.
+- If we lazy initialize in internal method (called method), i can't lazy initialize in internal method even i used transactional.

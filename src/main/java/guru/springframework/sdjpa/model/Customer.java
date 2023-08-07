@@ -1,6 +1,7 @@
 package guru.springframework.sdjpa.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -11,6 +12,7 @@ import java.util.Set;
 @Data
 @Entity
 @Builder
+@AllArgsConstructor
 public class Customer extends BaseEntity {
 
     private String customerName;
@@ -27,6 +29,9 @@ public class Customer extends BaseEntity {
 
     @OneToMany(mappedBy = "customer")
     private Set<OrderHeader> orderHeaders;
+
+    @Version
+    private Integer version;
 
     public Customer() {
         super();
