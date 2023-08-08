@@ -7,7 +7,6 @@
 */
 
 drop table if exist credit_card;
-
 create table credit_card(
     id bigint not null auto_increment,
     credit_card_number varchar(20),

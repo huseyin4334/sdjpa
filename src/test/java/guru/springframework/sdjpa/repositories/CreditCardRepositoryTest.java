@@ -1,6 +1,7 @@
 package guru.springframework.sdjpa.repositories;
 
 import guru.springframework.sdjpa.model.CreditCard;
+import guru.springframework.sdjpa.repositories.creditcard.CreditCardRepository;
 import guru.springframework.sdjpa.services.EncryptionService;
 import jakarta.inject.Inject;
 import org.junit.jupiter.api.Test;
