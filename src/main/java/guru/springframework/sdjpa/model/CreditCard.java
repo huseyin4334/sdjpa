@@ -1,10 +1,8 @@
 package guru.springframework.sdjpa.model;
 
 import guru.springframework.sdjpa.annotations.EncryptedString;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import guru.springframework.sdjpa.callbacks.CreditCardJPACallback;
+import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
 import org.hibernate.validator.constraints.CreditCardNumber;
@@ -16,6 +14,7 @@ import java.util.Objects;
 @Setter
 @ToString
 @RequiredArgsConstructor
+@EntityListeners(CreditCardJPACallback.class)
 public class CreditCard {
 
     @Id
