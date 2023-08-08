@@ -6,20 +6,13 @@
     Therefore, Every table have own sequence table for performance.
 */
 
-drop table if exist book;
-drop table if exist book_seq
+drop table if exist credit_card;
 
-create table book(
-    id bigint not null,
-    isbn varchar(255),
-    publisher varchar(255),
-    title varchar(255),
+create table credit_card(
+    id bigint not null auto_increment,
+    credit_card_number varchar(20),
+    cvv varchar(4),
+    expiration_date varchar(7),
     primary key (id)
 ) engine=InnoDB;
-
-create table book_seq (
-    next_val bigint
-) engine=InnoDB;
-
-insert into book_seq values(1);
 
