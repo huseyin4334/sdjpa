@@ -1,7 +1,6 @@
 package guru.springframework.sdjpa.model;
 
-import guru.springframework.sdjpa.annotations.EncryptedString;
-import guru.springframework.sdjpa.callbacks.CreditCardJPACallback;
+import guru.springframework.sdjpa.converters.CreditCardConverter;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
@@ -14,14 +13,14 @@ import java.util.Objects;
 @Setter
 @ToString
 @RequiredArgsConstructor
-@EntityListeners(CreditCardJPACallback.class)
+@EntityListeners(CreditCardConverter.class)
 public class CreditCard {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @EncryptedString
+    @Convert(converter = CreditCardConverter.class)
     @CreditCardNumber
     private String creditCardNumber;
 
