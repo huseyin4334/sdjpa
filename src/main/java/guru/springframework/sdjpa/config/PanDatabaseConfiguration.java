@@ -1,6 +1,7 @@
 package guru.springframework.sdjpa.config;
 
 import com.zaxxer.hikari.HikariDataSource;
+import guru.springframework.sdjpa.model.CreditCard;
 import guru.springframework.sdjpa.model.CreditCardPAN;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
@@ -14,6 +15,7 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.sql.DataSource;
+import java.util.Properties;
 
 @EnableJpaRepositories(basePackages = "guru.springframework.sdjpa.repositories.pan",
         entityManagerFactoryRef = "panEntityManagerFactory", transactionManagerRef = "panTransactionManager")
@@ -27,19 +29,31 @@ public class PanDatabaseConfiguration {
     }
 
     @Bean
+    @ConfigurationProperties(prefix = "spring.pan.datasource.hikari")
     public DataSource panDataSource(@Qualifier("panDataSourceProperties") DataSourceProperties cardDatasourceProperties) {
         return cardDatasourceProperties.initializeDataSourceBuilder()
                 .type(HikariDataSource.class)
                 .build();
     }
+
     @Bean
     public LocalContainerEntityManagerFactoryBean panEntityManagerFactory(@Qualifier("panDataSource") DataSource dataSource,
                                                                           EntityManagerFactoryBuilder builder) { // inject from spring boot
-        return builder.dataSource(dataSource)
+        Properties properties = new Properties();
+        properties.put("hibernate.hbm2ddl.auto", "validate");
+        properties.put("hibernate.physical_naming_strategy", "org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy");
+
+
+        LocalContainerEntityManagerFactoryBean efb = builder.dataSource(dataSource)
                 .packages(CreditCardPAN.class)
                 .persistenceUnit("pan")
                 .build();
+
+        efb.setJpaProperties(properties);
+
+        return efb;
     }
+
     @Bean
     public PlatformTransactionManager panTransactionManager(
             @Qualifier("panEntityManagerFactory") LocalContainerEntityManagerFactoryBean panEntityManagerFactory) {

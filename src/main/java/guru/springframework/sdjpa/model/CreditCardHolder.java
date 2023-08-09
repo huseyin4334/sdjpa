@@ -1,12 +1,15 @@
 package guru.springframework.sdjpa.model;
 
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import lombok.Data;
+import jakarta.persistence.*;
+import lombok.*;
 
-@Data
+@Entity
+@Getter
+@Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class CreditCardHolder {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,4 +20,6 @@ public class CreditCardHolder {
     private String lastName;
 
     private String zipCode;
+
+    private Long creditCardId;
 }

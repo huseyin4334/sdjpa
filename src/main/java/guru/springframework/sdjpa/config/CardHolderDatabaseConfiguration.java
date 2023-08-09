@@ -1,6 +1,7 @@
 package guru.springframework.sdjpa.config;
 
 import com.zaxxer.hikari.HikariDataSource;
+import guru.springframework.sdjpa.model.CreditCard;
 import guru.springframework.sdjpa.model.CreditCardHolder;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
@@ -14,6 +15,7 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.sql.DataSource;
+import java.util.Properties;
 
 @EnableJpaRepositories(basePackages = "guru.springframework.sdjpa.repositories.cardholder",
         entityManagerFactoryRef = "cardHolderEntityManagerFactory", transactionManagerRef = "cardHolderTransactionManager")
@@ -25,20 +27,33 @@ public class CardHolderDatabaseConfiguration {
     public DataSourceProperties cardHolderDataSourceProperties() {
         return new DataSourceProperties();
     }
+
     @Bean
+    @ConfigurationProperties(prefix = "spring.cardholder.datasource.hikari")
     public DataSource cardHolderDataSource(@Qualifier("cardHolderDataSourceProperties") DataSourceProperties cardDatasourceProperties) {
         return cardDatasourceProperties.initializeDataSourceBuilder()
                 .type(HikariDataSource.class)
                 .build();
     }
+
     @Bean
     public LocalContainerEntityManagerFactoryBean cardHolderEntityManagerFactory(@Qualifier("cardHolderDataSource") DataSource dataSource,
                                                                                  EntityManagerFactoryBuilder builder) { // inject from spring boot
-        return builder.dataSource(dataSource)
+        Properties properties = new Properties();
+        properties.put("hibernate.hbm2ddl.auto", "validate");
+        properties.put("hibernate.physical_naming_strategy", "org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy");
+
+
+        LocalContainerEntityManagerFactoryBean efb = builder.dataSource(dataSource)
                 .packages(CreditCardHolder.class)
-                .persistenceUnit("cardHolder")
+                .persistenceUnit("cardholder")
                 .build();
+
+        efb.setJpaProperties(properties);
+
+        return efb;
     }
+
     @Bean
     public PlatformTransactionManager cardHolderTransactionManager(
             @Qualifier("cardHolderEntityManagerFactory") LocalContainerEntityManagerFactoryBean cardHolderEntityManagerFactory) {

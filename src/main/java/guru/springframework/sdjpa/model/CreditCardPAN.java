@@ -1,11 +1,16 @@
 package guru.springframework.sdjpa.model;
 
 import guru.springframework.sdjpa.converters.CreditCardConverter;
-import jakarta.persistence.Convert;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import lombok.*;
 
+@Entity
+@Getter
+@Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@Table(name = "credit_card_pan")
 public class CreditCardPAN {
 
     @Id
